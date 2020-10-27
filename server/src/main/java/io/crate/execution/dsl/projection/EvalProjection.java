@@ -28,6 +28,7 @@ import io.crate.expression.symbol.SelectSymbol;
 import io.crate.expression.symbol.Symbol;
 import io.crate.expression.symbol.SymbolVisitors;
 import io.crate.expression.symbol.Symbols;
+import io.crate.metadata.RowGranularity;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 
@@ -41,6 +42,7 @@ import java.util.Map;
 public class EvalProjection extends Projection {
 
     private final List<Symbol> outputs;
+    private RowGranularity requiredGranularity = RowGranularity.CLUSTER;
 
     public EvalProjection(List<Symbol> outputs) {
         assert outputs.stream().noneMatch(
@@ -56,6 +58,15 @@ public class EvalProjection extends Projection {
     @Override
     public ProjectionType projectionType() {
         return ProjectionType.EVAL;
+    }
+
+    @Override
+    public RowGranularity requiredGranularity() {
+        return requiredGranularity;
+    }
+
+    public void requiredGranularity(RowGranularity requiredRowGranularity) {
+        this.requiredGranularity = requiredRowGranularity;
     }
 
     @Override
